@@ -386,3 +386,21 @@ body[data-mode="marceline"] .canvas-wrap::before {
   .grain { animation: none; }
   .canvas-wrap::before, .canvas-wrap::after { animation: none; opacity: .4; }
 }
+.hud,
+.ticker,
+.grain,
+.scanlines,
+.canvas-wrap::before,
+.canvas-wrap::after {
+  pointer-events: none;
+}
+
+.hud button,
+.hud a,
+.hud .btn-mode {
+  pointer-events: auto;
+}
+
+.ticker-track {
+  pointer-events: none;
+}
