@@ -245,4 +245,144 @@ function tick(now) {
 }
 
 function finishDraw() {
-  setPhase('done', '// pixel_kitty.render() — done
+  setPhase('done', '// pixel_kitty.render() — done');
+  drawBtn.disabled = false;
+  drawBtn.innerHTML = '<svg class="btn-icon" width="16" height="16" aria-hidden="true"><use href="#i-redraw"/></svg><span>DRAW AGAIN</span>';
+  canvasWrap.classList.add('shake');
+  setTimeout(() => canvasWrap.classList.remove('shake'), 400);
+  bumpStats();
+  AudioEngine.fanfare();
+  glitchBurst(600);
+}
+
+function startDraw() {
+  if (state.phase === 'drawing') return;
+  AudioEngine.init();
+  drawBtn.disabled = true;
+  drawBtn.innerHTML = '<svg class="btn-icon" width="16" height="16" aria-hidden="true"><use href="#i-play"/></svg><span>RENDERING…</span>';
+  setPhase('drawing', '// pixel_kitty.render()...');
+  state.startTime = performance.now();
+  requestAnimationFrame(tick);
+}
+
+function glitchBurst(duration = 500) {
+  const start = performance.now();
+  const p = getPalette();
+  const grid = buildKitty(1, p);
+  AudioEngine.glitch();
+  function frame(now) {
+    const e = now - start;
+    if (e > duration) { render(1, 0); return; }
+    const amt = Math.round(8 * (1 - e / duration));
+    paintGrid(grid, p, amt);
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+}
+
+function bumpStats() {
+  const h = parseFloat(heartCount.textContent.replace('k', '')) || 0;
+  heartCount.textContent = (h + 0.1).toFixed(1) + 'k';
+  const b = parseInt(batCount.textContent, 10) || 0;
+  batCount.textContent = String(b + 7);
+}
+
+modeToggle.addEventListener('click', () => {
+  const goingDark = document.body.dataset.mode !== 'marceline';
+  document.body.dataset.mode = goingDark ? 'marceline' : 'kitty';
+  modeToggle.setAttribute('aria-pressed', String(goingDark));
+  modeToggle.textContent = goingDark ? 'KITTY MODE' : 'MARCELINE MODE';
+  if (state.phase === 'done') { render(1, 0); glitchBurst(400); }
+  else if (state.phase === 'idle') render(0, 0);
+  showToast(goingDark ? 'marceline era activated' : 'back to sanrio core');
+});
+
+downloadBtn.addEventListener('click', () => {
+  const p = getPalette();
+  const grid = buildKitty(1, p);
+  const EXPORT_SIZE = 1200;
+  const out = document.createElement('canvas');
+  out.width = EXPORT_SIZE;
+  out.height = EXPORT_SIZE;
+  const octx = out.getContext('2d');
+  octx.imageSmoothingEnabled = false;
+  const px = Math.floor(EXPORT_SIZE / GRID_W);
+  const offX = Math.floor((EXPORT_SIZE - px * GRID_W) / 2);
+  const offY = Math.floor((EXPORT_SIZE - px * GRID_H) / 2);
+  octx.fillStyle = p.bg;
+  octx.fillRect(0, 0, EXPORT_SIZE, EXPORT_SIZE);
+  octx.fillStyle = p.bg2;
+  for (let y = 0; y < GRID_H; y += 4)
+    for (let x = 0; x < GRID_W; x += 4)
+      octx.fillRect(offX + x * px, offY + y * px, px, px);
+  for (let y = 0; y < GRID_H; y++)
+    for (let x = 0; x < GRID_W; x++) {
+      const c = grid[y * GRID_W + x];
+      if (!c) continue;
+      octx.fillStyle = c;
+      octx.fillRect(offX + x * px, offY + y * px, px, px);
+    }
+  out.toBlob((blob) => {
+    if (!blob) { showToast('export failed'); return; }
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `pixel-kitty-${Date.now()}.png`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+    showToast('saved — go post it');
+    AudioEngine.fanfare();
+  }, 'image/png');
+});
+
+shareBtn.addEventListener('click', async () => {
+  const payload = {
+    title: 'kitty.exe — marceline is down bad for kitty',
+    text: "lowkey obsessed. no cap. it's giving delulu vampire princess × sanrio core.",
+    url: location.href,
+  };
+  try {
+    if (navigator.share) await navigator.share(payload);
+    else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(`${payload.text}\n${payload.url}`);
+      showToast('copied — now go viral');
+    } else showToast('sharing unavailable');
+  } catch { }
+});
+
+let toastTimer;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+}
+
+function tickClock() {
+  const d = new Date();
+  clockEl.textContent = [d.getHours(), d.getMinutes(), d.getSeconds()]
+    .map(n => String(n).padStart(2, '0')).join(':');
+}
+tickClock();
+setInterval(tickClock, 1000);
+
+function boot() {
+  fitCanvas();
+  render(0, 0);
+  setPhase('idle', '// idle — press draw');
+  drawBtn.addEventListener('click', startDraw);
+  setInterval(() => {
+    if (state.phase === 'done') glitchBurst(200);
+  }, 8000);
+  document.addEventListener('click', () => AudioEngine.init(), { once: true });
+}
+
+window.addEventListener('resize', () => {
+  fitCanvas();
+  if (state.phase === 'done') render(1, 0);
+  else if (state.phase === 'idle') render(0, 0);
+});
+
+boot();
