@@ -33,6 +33,7 @@ const AudioEngine = {
     if (!this.enabled) return;
     this.init();
     if (!this.ctx) return;
+    if (this.ctx.state === 'suspended') this.ctx.resume();
     const t = this.ctx.currentTime;
     const osc = this.ctx.createOscillator();
     const gain = this.ctx.createGain();
@@ -58,14 +59,16 @@ const AudioEngine = {
 };
 
 function fitCanvas() {
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   const rect = canvas.getBoundingClientRect();
+  if (rect.width < 10 || rect.height < 10) return false;
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.width = Math.round(rect.width * dpr);
   canvas.height = Math.round(rect.height * dpr);
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   canvas._w = rect.width;
   canvas._h = rect.height;
   ctx.imageSmoothingEnabled = false;
+  return true;
 }
 
 function getPalette() {
@@ -182,8 +185,9 @@ function buildKitty(t, p) {
 }
 
 function paintGrid(grid, p, glitch = 0) {
+  if (!canvas._w || !canvas._h) return;
   const w = canvas._w, h = canvas._h;
-  const px = Math.max(1, Math.floor(w / GRID_W));
+  const px = Math.max(2, Math.floor(w / GRID_W));
   const offX = Math.floor((w - px * GRID_W) / 2);
   const offY = Math.floor((h - px * GRID_H) / 2);
 
@@ -262,10 +266,12 @@ function startDraw() {
   drawBtn.innerHTML = '<svg class="btn-icon" width="16" height="16" aria-hidden="true"><use href="#i-play"/></svg><span>RENDERING…</span>';
   setPhase('drawing', '// pixel_kitty.render()...');
   state.startTime = performance.now();
+  state.lastPixelSound = 0;
   requestAnimationFrame(tick);
 }
 
 function glitchBurst(duration = 500) {
+  if (!canvas._w) return;
   const start = performance.now();
   const p = getPalette();
   const grid = buildKitty(1, p);
@@ -369,7 +375,10 @@ tickClock();
 setInterval(tickClock, 1000);
 
 function boot() {
-  fitCanvas();
+  if (!fitCanvas()) {
+    requestAnimationFrame(boot);
+    return;
+  }
   render(0, 0);
   setPhase('idle', '// idle — press draw');
   drawBtn.addEventListener('click', startDraw);
@@ -379,10 +388,14 @@ function boot() {
   document.addEventListener('click', () => AudioEngine.init(), { once: true });
 }
 
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', boot);
+} else {
+  boot();
+}
+
 window.addEventListener('resize', () => {
-  fitCanvas();
+  if (!fitCanvas()) return;
   if (state.phase === 'done') render(1, 0);
   else if (state.phase === 'idle') render(0, 0);
 });
-
-boot();
