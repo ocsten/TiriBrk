@@ -391,16 +391,31 @@ body[data-mode="marceline"] .canvas-wrap::before {
 .grain,
 .scanlines,
 .canvas-wrap::before,
-.canvas-wrap::after {
-  pointer-events: none;
+.canvas-wrap::after,
+.canvas-label {
+  pointer-events: none !important;
 }
 
 .hud button,
 .hud a,
 .hud .btn-mode {
-  pointer-events: auto;
+  pointer-events: auto !important;
 }
 
-.ticker-track {
-  pointer-events: none;
+body,
+.grain,
+.scanlines {
+  cursor: default;
+}
+
+.canvas-wrap {
+  min-height: 300px;
+}
+
+#kitty {
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+  z-index: 1;
 }
