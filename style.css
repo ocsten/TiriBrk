@@ -46,7 +46,11 @@ body[data-mode="marceline"] {
 /* ============================================================
    reset
    ============================================================ */
-*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 html, body { min-height: 100%; }
 body {
   font-family: var(--font-mono);
@@ -56,36 +60,45 @@ body {
   cursor: crosshair;
   transition: background var(--slow) var(--ease), color var(--slow) var(--ease);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 button { font: inherit; }
+a { color: inherit; }
 .mono { font-family: var(--font-mono); }
-.dim { color: var(--ink-dim); }
+.dim  { color: var(--ink-dim); }
 .times { color: var(--ink-dim); padding: 0 .25em; }
 
 /* ============================================================
    overlays
    ============================================================ */
 .grain {
-  position: fixed; inset: 0; z-index: 9998; pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
   opacity: var(--grain-op);
   mix-blend-mode: var(--grain-blend);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   animation: grainShift 8s steps(8) infinite;
 }
 @keyframes grainShift {
-  0%,100% { transform: translate(0,0); }
-  20%     { transform: translate(-2%, 1%); }
-  40%     { transform: translate(1%, -2%); }
-  60%     { transform: translate(-1%, 2%); }
-  80%     { transform: translate(2%, 1%); }
+  0%, 100% { transform: translate(0, 0); }
+  20%      { transform: translate(-2%, 1%); }
+  40%      { transform: translate(1%, -2%); }
+  60%      { transform: translate(-1%, 2%); }
+  80%      { transform: translate(2%, 1%); }
 }
+
 .scanlines {
-  position: fixed; inset: 0; z-index: 9997; pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9997;
+  pointer-events: none;
   background: repeating-linear-gradient(
     to bottom,
     transparent 0,
     transparent 2px,
-    rgba(0,0,0,.035) 3px,
+    rgba(0, 0, 0, .035) 3px,
     transparent 4px
   );
 }
@@ -94,9 +107,15 @@ button { font: inherit; }
    hud
    ============================================================ */
 .hud {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   height: var(--hud-h);
-  display: flex; justify-content: space-between; align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   padding: 0 1.5rem;
   font-size: .75rem;
   letter-spacing: .08em;
@@ -106,7 +125,12 @@ button { font: inherit; }
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-.hud-left, .hud-right { display: flex; align-items: center; gap: .75rem; }
+.hud-left,
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+}
 .status-dot {
   color: var(--accent);
   filter: drop-shadow(0 0 6px var(--accent));
@@ -126,15 +150,34 @@ button { font: inherit; }
   cursor: pointer;
   transition: all var(--fast) var(--ease);
 }
-.btn-mode:hover { background: var(--ink); color: var(--bg); }
+.btn-mode:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
 .btn-mode[aria-pressed="true"] {
   background: var(--accent);
   color: var(--bg);
   border-color: var(--accent);
 }
 
+.btn-icon-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  text-decoration: none;
+  transition: background var(--fast) var(--ease), color var(--fast) var(--ease);
+}
+.btn-icon-link:hover {
+  background: var(--ink);
+  color: var(--bg);
+}
+
 /* ============================================================
-   stage
+   stage (home + generator)
    ============================================================ */
 .stage {
   min-height: 100vh;
@@ -145,6 +188,12 @@ button { font: inherit; }
   padding: calc(var(--hud-h) + 3rem) 3rem calc(var(--ticker-h) + 3rem);
   max-width: 1400px;
   margin: 0 auto;
+}
+
+.page-generator .stage-generator {
+  grid-template-columns: 1fr 1.2fr;
+  align-items: start;
+  padding-top: calc(var(--hud-h) + 3rem);
 }
 
 /* ============================================================
@@ -195,10 +244,13 @@ button { font: inherit; }
    actions
    ============================================================ */
 .actions {
-  display: flex; gap: 1rem; flex-wrap: wrap;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
   margin-bottom: 2rem;
 }
-.btn-primary, .btn-ghost {
+.btn-primary,
+.btn-ghost {
   display: inline-flex;
   align-items: center;
   gap: .6rem;
@@ -210,9 +262,16 @@ button { font: inherit; }
   padding: 1rem 1.5rem;
   border: 2px solid var(--ink);
   cursor: pointer;
-  transition: transform var(--fast) var(--ease), box-shadow var(--fast) var(--ease), background var(--fast) var(--ease);
+  transition:
+    transform var(--fast) var(--ease),
+    box-shadow var(--fast) var(--ease),
+    background var(--fast) var(--ease),
+    color var(--fast) var(--ease);
 }
-.btn-icon { flex-shrink: 0; display: block; }
+.btn-icon {
+  flex-shrink: 0;
+  display: block;
+}
 
 .btn-primary {
   background: var(--accent);
@@ -225,7 +284,7 @@ button { font: inherit; }
   box-shadow: 9px 9px 0 var(--ink);
 }
 .btn-primary:active {
-  transform: translate(0,0);
+  transform: translate(0, 0);
   box-shadow: 2px 2px 0 var(--ink);
 }
 .btn-primary[disabled] {
@@ -243,12 +302,21 @@ button { font: inherit; }
   background: var(--ink);
   color: var(--bg);
 }
+.btn-ghost--danger {
+  border-color: var(--ink-dim);
+  color: var(--ink-dim);
+}
+.btn-ghost--danger:hover {
+  background: var(--ink-dim);
+  color: var(--bg);
+}
 
 /* ============================================================
    meta
    ============================================================ */
 .meta {
-  display: flex; gap: 2rem;
+  display: flex;
+  gap: 2rem;
   font-size: .75rem;
   text-transform: uppercase;
   letter-spacing: .1em;
@@ -257,7 +325,33 @@ button { font: inherit; }
 .meta dd { font-weight: 700; font-size: 1rem; letter-spacing: 0; }
 
 /* ============================================================
-   canvas
+   steps
+   ============================================================ */
+.steps {
+  list-style: none;
+  margin-top: 2rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: .6rem;
+  font-size: .78rem;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: var(--ink-dim);
+}
+.steps li {
+  display: flex;
+  gap: 1rem;
+  align-items: baseline;
+}
+.steps .num {
+  color: var(--accent);
+  font-weight: 700;
+  min-width: 2em;
+}
+
+/* ============================================================
+   canvas (home)
    ============================================================ */
 .canvas-wrap {
   position: relative;
@@ -270,16 +364,20 @@ button { font: inherit; }
 }
 .canvas-wrap.shake { animation: shake .35s ease; }
 @keyframes shake {
-  0%,100% { transform: translate(0,0); }
-  25%     { transform: translate(-4px, 2px); }
-  50%     { transform: translate(4px, -2px); }
-  75%     { transform: translate(-2px, -2px); }
+  0%, 100% { transform: translate(0, 0); }
+  25%      { transform: translate(-4px, 2px); }
+  50%      { transform: translate(4px, -2px); }
+  75%      { transform: translate(-2px, -2px); }
 }
-
-#kitty { width: 100%; height: 100%; display: block; }
-
+#kitty {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
 .canvas-label {
-  position: absolute; bottom: .75rem; left: .75rem;
+  position: absolute;
+  bottom: .75rem;
+  left: .75rem;
   font-size: .65rem;
   letter-spacing: .1em;
   color: var(--ink-dim);
@@ -288,12 +386,164 @@ button { font: inherit; }
 }
 
 /* ============================================================
+   generator panel
+   ============================================================ */
+.gen-panel {
+  background: var(--bg-2);
+  border: 2px solid var(--line);
+  box-shadow: 12px 12px 0 var(--accent);
+  padding: 1.5rem;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--slow) var(--ease);
+}
+
+/* ---- dropzone ---- */
+.dropzone {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: .75rem;
+  padding: 3rem 1.5rem;
+  border: 2px dashed var(--line);
+  cursor: pointer;
+  text-align: center;
+  transition: background var(--fast) var(--ease), border-color var(--fast) var(--ease);
+}
+.dropzone:hover,
+.dropzone:focus-visible {
+  background: color-mix(in oklab, var(--accent) 8%, transparent);
+  border-color: var(--accent);
+  outline: none;
+}
+.dropzone.is-drag {
+  background: color-mix(in oklab, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+}
+.dropzone-icon {
+  color: var(--accent);
+  margin-bottom: .5rem;
+}
+.dropzone-title {
+  font-size: .9rem;
+  letter-spacing: .12em;
+  font-weight: 700;
+}
+.dropzone-hint {
+  font-size: .7rem;
+  letter-spacing: .1em;
+}
+
+/* ---- editor ---- */
+.editor {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.canvas-stage {
+  position: relative;
+  aspect-ratio: 1;
+  background: var(--bg);
+  border: 2px solid var(--line);
+  overflow: hidden;
+}
+#editCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---- controls ---- */
+.controls {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+fieldset {
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+fieldset legend {
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  margin-bottom: .6rem;
+  display: block;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+}
+.chip {
+  font-family: var(--font-mono);
+  font-size: .7rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  padding: .55rem .85rem;
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  transition: all var(--fast) var(--ease);
+}
+.chip:hover {
+  background: color-mix(in oklab, var(--ink) 8%, transparent);
+}
+.chip.is-active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+
+.slider-group {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  flex-wrap: wrap;
+}
+.slider-group legend {
+  width: 100%;
+  margin-bottom: .25rem;
+}
+.slider-group input[type="range"] {
+  flex: 1;
+  accent-color: var(--accent);
+  min-width: 140px;
+  height: 2px;
+  cursor: pointer;
+}
+.slider-group output {
+  font-size: .72rem;
+  letter-spacing: .1em;
+  min-width: 3em;
+  text-align: right;
+}
+
+.gen-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem;
+  margin-top: .25rem;
+}
+
+/* ============================================================
    ticker
    ============================================================ */
 .ticker {
-  position: fixed; bottom: 0; left: 0; right: 0; z-index: 100;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
   height: var(--ticker-h);
-  display: flex; align-items: center;
+  display: flex;
+  align-items: center;
   overflow: hidden;
   border-top: 1px solid var(--line);
   background: var(--accent);
@@ -303,7 +553,8 @@ button { font: inherit; }
   text-transform: uppercase;
 }
 .ticker-track {
-  display: flex; gap: 2rem;
+  display: flex;
+  gap: 2rem;
   white-space: nowrap;
   animation: ticker 40s linear infinite;
   will-change: transform;
@@ -330,6 +581,7 @@ button { font: inherit; }
   transition: opacity var(--fast) var(--ease), transform var(--fast) var(--ease);
   z-index: 200;
   max-width: 90vw;
+  text-align: center;
 }
 .toast.show {
   opacity: 1;
@@ -345,20 +597,46 @@ button { font: inherit; }
     padding: calc(var(--hud-h) + 2rem) 1.25rem calc(var(--ticker-h) + 2rem);
     gap: 2.5rem;
   }
-  .canvas-wrap { max-width: 500px; margin: 0 auto; width: 100%; }
-  .meta { flex-wrap: wrap; gap: 1rem 1.5rem; }
+  .page-generator .stage-generator {
+    grid-template-columns: 1fr;
+  }
+  .canvas-wrap {
+    max-width: 500px;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .gen-panel {
+    padding: 1rem;
+    box-shadow: 8px 8px 0 var(--accent);
+  }
+  .meta {
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+  }
   .hud { padding: 0 1rem; }
   .hud-right .dim { display: none; }
+  .actions,
+  .gen-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .btn-primary,
+  .btn-ghost {
+    justify-content: center;
+  }
 }
 
 /* ============================================================
    reduced motion
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: .001ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: .001ms !important;
   }
   .ticker-track { animation: none; }
+  .grain { animation: none; }
 }
